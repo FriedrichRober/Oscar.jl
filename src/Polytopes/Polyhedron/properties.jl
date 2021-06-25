@@ -126,7 +126,7 @@ function Base.iterate(iter::PolyhedronRayIterator, index = 1)
         if !iszero(vertices[index, 1])
             index += 1
         else
-            return (vertices[index, 2:end], index + 1)
+            return (Ray(vertices[index, 2:end]), index + 1)
         end
     end
 end

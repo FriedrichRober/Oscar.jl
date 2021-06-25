@@ -32,6 +32,11 @@
         @test vertices_as_point_matrix(2*point) == [0 2 0]
         @test vertices_as_point_matrix([0,1,0] + point) == [0 2 0]
         @test length(collect(rays(Pos))) == 3
+
+        @test Q0 == convex_hull(vertices(Q0))
+        # @test Q0 == convex_hull(vertices(Q0), rays(Q0))
+        @test Q1 == convex_hull(vertices(Q1), rays(Q1))
+        # @test Q1 != convex_hull(vertices(Q1))
     end
 
     @testset "linear programs" begin

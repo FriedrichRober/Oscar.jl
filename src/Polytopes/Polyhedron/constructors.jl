@@ -62,6 +62,11 @@ function convex_hull(collection)
     pts = tomatrix(collection)
     return convex_hull(pts)
 end
+function convex_hull(vcollection, rcollection)
+    pts = tomatrix(vcollection)
+    rays = tomatrix(rcollection)
+    return convex_hull(pts, rays)
+end
 
 function convex_hull(V::AbstractMatrix; non_redundant::Bool=false)
     if !non_redundant
