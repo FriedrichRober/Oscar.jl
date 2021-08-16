@@ -26,7 +26,7 @@ julia> T, _ = grade(S)
 (Multivariate Polynomial Ring in x, y, z over Rational Field graded by
   x -> [1]
   y -> [1]
-  z -> [1], MPolyElem_dec{fmpq,fmpq_mpoly}[x, y, z])
+  z -> [1], MPolyElem_dec{fmpq, fmpq_mpoly}[x, y, z])
 
 julia> C = Oscar.ProjPlaneCurve(x^2*(x+y)*(y^3-x^2*z))
 Projective plane curve defined by -x^5*z - x^4*y*z + x^3*y^3 + x^2*y^4
@@ -34,7 +34,7 @@ Projective plane curve defined by -x^5*z - x^4*y*z + x^3*y^3 + x^2*y^4
 
 julia> PP = projective_space(QQ, 2)
 (Projective space of dim 2 over Rational Field
-, MPolyElem_dec{fmpq,fmpq_mpoly}[x[0], x[1], x[2]])
+, MPolyElem_dec{fmpq, fmpq_mpoly}[x[0], x[1], x[2]])
 
 julia> P = Oscar.Geometry.ProjSpcElem(PP[1], [QQ(0), QQ(0), QQ(1)])
 (0 : 0 : 1)
@@ -72,11 +72,11 @@ julia> T, _ = grade(S)
 (Multivariate Polynomial Ring in x, y, z over Rational Field graded by
   x -> [1]
   y -> [1]
-  z -> [1], MPolyElem_dec{fmpq,fmpq_mpoly}[x, y, z])
+  z -> [1], MPolyElem_dec{fmpq, fmpq_mpoly}[x, y, z])
 
 julia> PP = projective_space(QQ, 2)
 (Projective space of dim 2 over Rational Field
-, MPolyElem_dec{fmpq,fmpq_mpoly}[x[0], x[1], x[2]])
+, MPolyElem_dec{fmpq, fmpq_mpoly}[x[0], x[1], x[2]])
 
 julia> C = Oscar.ProjPlaneCurve(x^2*(x+y)*(y^3-x^2*z))
 Projective plane curve defined by -x^5*z - x^4*y*z + x^3*y^3 + x^2*y^4
@@ -128,7 +128,7 @@ end
 # convert array of lenght 2 to ProjSpcElem with 1 for last coordinate.
 # Helping function
 
-function Array_to_ProjSpcElem(PP::Oscar.Geometry.ProjSpc{S}, p::Array{S, 1}) where S <: FieldElem
+function Array_to_ProjSpcElem(PP::Oscar.Geometry.ProjSpc{S}, p::Vector{S}) where S <: FieldElem
   dim(PP) == length(p) || error("Not the right size")
   m = push!(p, 1)
   return Oscar.Geometry.ProjSpcElem(PP, m)
@@ -154,11 +154,11 @@ julia> T, _ = grade(S)
 (Multivariate Polynomial Ring in x, y, z over Rational Field graded by
   x -> [1]
   y -> [1]
-  z -> [1], MPolyElem_dec{fmpq,fmpq_mpoly}[x, y, z])
+  z -> [1], MPolyElem_dec{fmpq, fmpq_mpoly}[x, y, z])
 
 julia> PP = projective_space(QQ, 2)
 (Projective space of dim 2 over Rational Field
-, MPolyElem_dec{fmpq,fmpq_mpoly}[x[0], x[1], x[2]])
+, MPolyElem_dec{fmpq, fmpq_mpoly}[x[0], x[1], x[2]])
 
 julia> C = Oscar.ProjPlaneCurve(T(x+y+z))
 Projective plane curve defined by x + y + z
@@ -169,7 +169,7 @@ Projective plane curve defined by z
 
 
 julia> Oscar.curve_intersect(PP[1], C, D)
-2-element Array{Array{Any,1},1}:
+2-element Vector{Vector{Any}}:
  []
  [(-1 : 1 : 0)]
 ```
@@ -241,8 +241,8 @@ Return the reduced singular locus of `C` as a list whose first element is the pr
 """
 function curve_singular_locus(PP::Oscar.Geometry.ProjSpc{S}, C::ProjectivePlaneCurve{S}) where S <: FieldElem
   D = reduction(C)
-  Pts = Array{Oscar.Geometry.ProjSpcElem, 1}()
-  CC = Array{ProjPlaneCurve, 1}()
+  Pts = Vector{Oscar.Geometry.ProjSpcElem}()
+  CC = Vector{ProjPlaneCurve}()
   # The components with multiplicity > 1 are singular
   f = []
   for (h, c) in C.components
@@ -459,7 +459,7 @@ function arithmetic_genus(C::ProjectivePlaneCurve)
   I = ideal(S, [F])
   A = quo(S, I)
   H = hilbert_polynomial(A[1])
-  return -coeff(H, 0) + 1
+  return -ZZ(coeff(H, 0)) + 1
 end
 
 ################################################################################
@@ -475,12 +475,12 @@ function geometric_genus(C::ProjectivePlaneCurve{S}) where S <: FieldElem
    I = ideal(R, [F])
    if S == fmpq
       singular_assure(I)
-      return Singular.LibNormal.genus(I.gens.S)
+      return ZZ(Singular.LibNormal.genus(I.gens.S)::Int)
    else
       A = quo(R, I)
       L = normalization(A[1])
       m = length(L)
-      pa = 0
+      pa = zero(ZZ)
       for i in 1:m
          J = L[i][1].I
          T, _ = grade(parent(J[1]))
@@ -488,7 +488,7 @@ function geometric_genus(C::ProjectivePlaneCurve{S}) where S <: FieldElem
          JJ = ideal(T, V)
          B = quo(T, JJ)
          H = hilbert_polynomial(B[1])
-         pa = pa - coeff(H, 0)
+         pa = pa - ZZ(coeff(H, 0))
       end
       return pa + 1
    end

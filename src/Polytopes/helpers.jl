@@ -41,27 +41,27 @@ interpreted as row vectors. Empty vectors are ignored.
 
 ```
 julia> stack([1, 2], [0, 0])
-2×2 Array{Int64,2}:
+2×2 Matrix{Int64}:
  1  2
  0  0
 
 julia> stack([1 2], [0 0])
-2×2 Array{Int64,2}:
+2×2 Matrix{Int64}:
  1  2
  0  0
 
 julia> stack([1 2], [0, 0])
-2×2 Array{Int64,2}:
+2×2 Matrix{Int64}:
  1  2
  0  0
 
 julia> stack([1, 2], [0 0])
-2×2 Array{Int64,2}:
+2×2 Matrix{Int64}:
  1  2
  0  0
 
 julia> stack([1 2], [])
-1×2 Array{Int64,2}:
+1×2 Matrix{Int64}:
  1  2
 ```
 """
@@ -74,7 +74,7 @@ stack(A::AbstractVector, B::AbstractVector) = isempty(A) ? B : [A'; B']
 stack(A::AbstractVector,nothing) = A'
 stack(nothing,B::AbstractVector) = B'
 #=
-function stack(A::Array{Polymake.Vector{Polymake.Rational},1})
+function stack(A::Vector{Polymake.Vector{Polymake.Rational}})
     if length(A)==2
         return stack(A[1],A[2])
     end
@@ -102,5 +102,3 @@ function decompose_hdata(A)
 end
 
 import Polymake: IncidenceMatrix
-
-# Base.show(io::IO, ::MIME"text/plain", I::IncidenceMatrix) = show(io, "text/plain", Matrix{Bool}(I))
